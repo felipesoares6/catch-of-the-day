@@ -51,6 +51,15 @@ var App = React.createClass({
     this.setState({fishes: this.state.fishes});
   },
 
+  removeFish: function (key) {
+    if(!confirm('Are you sure you want to remove this fish?')) {
+      return;
+    }
+
+    this.state.fishes[key] = null;
+    this.setState({fishes: this.state.fishes});
+  },
+
   loadSamples: function () {
     this.setState({
       fishes: require('./sample-fishes')
@@ -59,6 +68,11 @@ var App = React.createClass({
 
   addToOrder: function (key) {
     this.state.order[key] = this.state.order[key] + 1 || 1;
+    this.setState({order: this.state.order});
+  },
+
+  removeFromOrder: function (key) {
+    delete this.state.order[key];
     this.setState({order: this.state.order});
   },
 
@@ -75,9 +89,9 @@ var App = React.createClass({
            {Object.keys(this.state.fishes).map(this.renderFish)}
          </ul>
        </div>
-       <Order fishes={this.state.fishes} order={this.state.order}/>
+       <Order fishes={this.state.fishes} order={this.state.order} removeFromOrder={this.removeFromOrder}/>
        <Inventory addFish={this.addFish} loadSamples={this.loadSamples}
-        fishes={this.state.fishes} linkState={this.linkState}/>
+        fishes={this.state.fishes} linkState={this.linkState} removeFish={this.removeFish}/>
      </div>
    )
  }
@@ -164,10 +178,11 @@ var Order = React.createClass({
     var fish = this.props.fishes[key];
     var count = this.props.order[key];
 
+    var removeButton = <button onClick={this.props.removeFromOrder.bind(null, key)}> &tines; </button>
     if (!fish) {
       return (
         <li className="price" key={key}>
-          Sorry, fish no longer available.
+          Sorry, fish no longer available. {removeButton}
         </li>
       )
     }
@@ -177,6 +192,7 @@ var Order = React.createClass({
         {count} lbs
         {fish.name}
         <span className="price">{h.formatPrice(count * fish.price)}</span>
+        {removeButton}
       </li>
     )
   },
@@ -226,7 +242,7 @@ var Inventory = React.createClass({
 
         <input type="text" valueLink={linkState('fishes.' + key + '.img')} />
 
-        <button> Remove Fish</button>
+        <button onClick={this.props.removeFish.bind(null, key)}> Remove Fish</button>
       </div>
     )
   },
