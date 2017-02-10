@@ -1,13 +1,16 @@
 import React from 'react';
 import CSSTransitionGroup from 'react-addons-css-transition-group';
+import autobind from 'autobind-decorator';
 import h from '../helpers';
 
-var Order = React.createClass({
-  renderOrder: function (key) {
+@autobind
+class Order extends React.Component {
+  renderOrder (key) {
     var fish = this.props.fishes[key];
     var count = this.props.order[key];
 
     var removeButton = <button onClick={this.props.removeFromOrder.bind(null, key)}> &times; </button>
+
     if (!fish) {
       return (
         <li className="price" key={key}>
@@ -33,9 +36,9 @@ var Order = React.createClass({
           <span className="price">{h.formatPrice(count * fish.price)}</span>
       </li>
     )
-  },
+  }
 
-  render: function () {
+  render () {
     var orderIds = Object.keys(this.props.order);
 
     var total = orderIds.reduce((prevTotal, key) => {
@@ -47,6 +50,7 @@ var Order = React.createClass({
         return prevTotal + (count * parseInt(fish.price) || 0);
       }
     }, 0);
+
     return (
       <div className="order-wrap">
         <h2 className="order-title"> You Order </h2>
@@ -65,13 +69,13 @@ var Order = React.createClass({
         </CSSTransitionGroup>
       </div>
     )
-  },
-
-  PropTypes: {
-    fishes: React.PropTypes.object.isRequired,
-    order: React.PropTypes.object.isRequired,
-    removeFromOrder: React.PropTypes.func.isRequired,
   }
-});
+}
+
+Order.propTypes = {
+  fishes: React.PropTypes.object.isRequired,
+  order: React.PropTypes.object.isRequired,
+  removeFromOrder: React.PropTypes.func.isRequired,
+}
 
 export default Order;
